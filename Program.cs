@@ -9,35 +9,35 @@ class Program
     static void Main()
     {
         
-        ArrayList sayilar = new ArrayList();
+        ArrayList numbers = new ArrayList();
         for (int i = 1; i <= 1000000; i++)
         {
-            sayilar.Add(i);
+            numbers.Add(i);
         }
 
         
-        int bolum = sayilar.Count / 4;
-        List<ArrayList> bolumler = new List<ArrayList>();
+        int division = numbers.Count / 4;
+        List<ArrayList> divisions = new List<ArrayList>();
 
         for (int i = 0; i < 4; i++)
         {
-            int baslangicindex = i * bolum;
-            int sonindex = (i + 1) * bolum - 1;
+            int firstindex = i * division;
+            int lastindex = (i + 1) * division - 1;
 
-            ArrayList yigin = new ArrayList();
+            ArrayList stack = new ArrayList();
 
-            for (int j = baslangicindex; j <= sonindex; j++)
+            for (int j = firstindex; j <= lastindex; j++)
             {
-                yigin.Add(sayilar[j]);
+                stack.Add(numbers[j]);
             }
 
-            bolumler.Add(yigin);
+            divisions.Add(stack);
         }
 
        
-        ArrayList ciftsayilar = new ArrayList();
-        ArrayList teksayilar = new ArrayList();
-        ArrayList asalsayilar = new ArrayList();
+        ArrayList evennumbers = new ArrayList();
+        ArrayList oddnumbers = new ArrayList();
+        ArrayList primenumbers = new ArrayList();
 
        
         Task[] tasks = new Task[4];
@@ -48,7 +48,7 @@ class Program
 
             tasks[i] = Task.Run(() =>
             {
-                FindNumbers(bolumler[index], ciftsayilar, teksayilar, asalsayilar);
+                FindNumbers(divisions[index], evennumbers, oddnumbers, primenumbers);
             });
         }
 
@@ -56,36 +56,36 @@ class Program
         Task.WaitAll(tasks);
 
         
-        Console.WriteLine("Çift Sayılar: " + string.Join(", ", ciftsayilar.ToArray()));
-        Console.WriteLine("Tek Sayılar: " + string.Join(", ", teksayilar.ToArray()));
-        Console.WriteLine("Asal Sayılar: " + string.Join(", ", asalsayilar.ToArray()));
+        Console.WriteLine("Çift Sayılar: " + string.Join(", ", evennumbers.ToArray()));
+        Console.WriteLine("Tek Sayılar: " + string.Join(", ", oddnumbers.ToArray()));
+        Console.WriteLine("Asal Sayılar: " + string.Join(", ", primenumbers.ToArray()));
 
-        bool kosul = true;
-        while (kosul)
+        bool condition = true;
+        while (condition)
         {
             Console.WriteLine("Liste Yazdırın\n1-Çift\n2-Tek\n3-Asal\n0-Çıkış");
             int input = int.Parse(Console.ReadLine());
             switch (input)
             {
                 case 0:
-                    kosul = false;
+                    condition = false;
                     break;
                 case 1:
-                    for (int i = 0; i < ciftsayilar.Count; i++)
+                    for (int i = 0; i < evennumbers.Count; i++)
                     {
-                        Console.WriteLine("Çift sayı : {0}", ciftsayilar[i].ToString());
+                        Console.WriteLine("Çift sayı : {0}", evennumbers[i].ToString());
                     }
                     break;
                 case 2:
-                    for (int i = 0; i < teksayilar.Count; i++)
+                    for (int i = 0; i < oddnumbers.Count; i++)
                     {
-                        Console.WriteLine("Çift sayı : {0}", teksayilar[i].ToString());
+                        Console.WriteLine("Tek sayı : {0}", oddnumbers[i].ToString());
                     }
                     break;
                 case 3:
-                    for (int i = 0; i < asalsayilar.Count; i++)
+                    for (int i = 0; i < primenumbers.Count; i++)
                     {
-                        Console.WriteLine("Çift sayı : {0}", asalsayilar[i].ToString());
+                        Console.WriteLine("Asal sayı : {0}", primenumbers[i].ToString());
                     }
                     break;
                 default:
@@ -96,41 +96,41 @@ class Program
         Console.ReadLine();
     }
 
-    static void FindNumbers(ArrayList yigin, ArrayList ciftsayilar, ArrayList teksayilar, ArrayList asalsayilar)
+    static void FindNumbers(ArrayList stack, ArrayList evennumbers, ArrayList oddnumbers, ArrayList primenumbers)
     {
-        foreach (int sayi in yigin)
+        foreach (int number in stack)
         {
-            if (Ciftmi(sayi))
+            if (isEven(number))
             {
-                lock (ciftsayilar)
+                lock (evennumbers)
                 {
-                    ciftsayilar.Add(sayi);
+                    evennumbers.Add(number);
                 }
             }
             else
             {
-                lock (teksayilar)
+                lock (oddnumbers)
                 {
-                    teksayilar.Add(sayi);
+                    oddnumbers.Add(number);
                 }
             }
 
-            if (Asalmi(sayi))
+            if (isPrime(number))
             {
-                lock (asalsayilar)
+                lock (primenumbers)
                 {
-                    asalsayilar.Add(sayi);
+                    primenumbers.Add(number);
                 }
             }
         }
     }
 
-    static bool Ciftmi(int number)
+    static bool isEven(int number)
     {
         return number % 2 == 0;
     }
 
-    static bool Asalmi(int number)
+    static bool isPrime(int number)
     {
         if (number < 2)
             return false;
